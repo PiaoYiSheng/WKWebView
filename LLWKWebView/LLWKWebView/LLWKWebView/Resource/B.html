@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, target-densitydpi=device-dpi"/>
+    </head>
+    <body>
+        <div style="margin-top: 20px">
+            <title>JS与OC交互</title>
+            
+            <input type="button" value="HTML调用alert拦截" onclick="tanChuang();" />
+            <input type="button" value="HTML调用confirm拦截" onclick="tiJiao();" />
+            <br/>
+            <input type="button" value="HTML调用prompt拦截" onclick="shuRuKuang();" />
+            <br/>
+            <br/>
+        
+            <input type="button" value="JS -> iOS 传值" onclick="chuanZhiFangFa();" />
+            <input type="button" value="调用iOS某个类获取json字符串" onclick="getJSON_iOS();" />
+            <input type="button" value="获取Agent" onclick="getAgent();" />
+            <input type="button" value="通过反射让iOS跳转" onclick="fanSheTiaoZhuan();" />
+            <br/>
+            
+            <h3>交互的数据格式</h3>
+            <table style="width: 300px; height: 300px;border: 1px solid #FF9900;">
+                <tr>
+                    <td id="agentShow" width="200" style="word-break:break-all;">内容</td>
+                </tr>
+            </table>
+            <br/>
+            <br/>
+
+           
+            <input id="inputFile" onchange="upLoadFile(event)" type="file" accept="image/*" multiple='multiple'>
+            <br/>
+            <br/>
+            
+            <input type="button" value="获取原生图片" onclick="diaoYongXiangJi();" />
+            <br/>
+            <br/>
+            
+            <img id="photo" src="" alt="原生图片" style='width:200px;height:200px;'/>
+            <br/>
+            <br/>
+            
+            <a href="baidu://callName_?https://www.baidu.com">百度主页</a>
+            <br/>
+            <br/>
+            
+            <a href="https://www.jianshu.com/u/74183a748012">简书</a>
+            <br/>
+            <br/>
+            
+            <!--        音频-->
+            <p style="text-align:center"> <audio controls="controls" height="100" width="100">
+                <source src="http://up.mcyt.net/?down/47548.mp3" type="audio/mp3" />
+                <source src="http://up.mcyt.net/?down/47548.ogg" type="audio/ogg" />
+                <embed height="100" width="100" src="http://up.mcyt.net/?down/47548.mp3" />
+            </audio> </p>
+            
+            <!--         视频-->
+            <p style="text-align:center"> <video width="320" height="240" controls="controls" preload="auto" poster="http://a.hiphotos.baidu.com/zhidao/pic/item/0d338744ebf81a4cd90f1d3ad72a6059252da600.jpg">
+                <source src="http://baobab.kaiyanapp.com/api/v1/playUrl?vid=39183&editionType=normal&source=qcloud" type="video/mp4" />
+                <source src="http://baobab.kaiyanapp.com/api/v1/playUrl?vid=39183&editionType=normal&source=qcloud" type="video/ogg" />
+                <source src="http://baobab.wdjcdn.com/1455782903700jy" type="video/webm" />
+                <object data="http://baobab.kaiyanapp.com/api/v1/playUrl?vid=39183&editionType=normal&source=qcloud" width="320" height="240">
+                    <embed src="http://baobab.kaiyanapp.com/api/v1/playUrl?vid=39183&editionType=normal&source=qcloud" width="320" height="240" />
+                </object>
+            </video> </p>
+        
+        <script>
+            
+            var api_token;
+
+            <!--调用了弹窗-->
+            function tanChuang() {
+                <!-- functionType 标识: 传过来什么,回传什么 -->
+                <!-- buttonStyle 三种, 0=默认,1=取消,2=红色 -->
+                <!-- placeholder 输入框提示语 -->
+                requestObj = '{"title":"确定要提交吗?","message":"内容","buttonCount":[{"title":"取消","buttonStyle":"1"},{"title":"确定","buttonStyle":"0"}],"functionType":"标识","placeholder":""}'
+                
+                alert(requestObj);
+            }
+        
+        
+            <!-- 调用了提交 -->
+            function tiJiao(){
+                <!-- functionType 标识: 传过来什么,回传什么 -->
+                <!-- buttonStyle 三种, 0=默认,1=取消,2=红色 -->
+                <!-- placeholder 输入框提示语 -->
+                requestObj = '{"title":"确定要提交吗?","message":"内容","buttonCount":[{"title":"取消","buttonStyle":"1"},{"title":"确定","buttonStyle":"0"}],"functionType":"标识","placeholder":""}'
+                
+                confirm(requestObj);
+            }
+        
+        <!-- 调用了输入框 -->
+        function shuRuKuang(){
+            <!-- functionType 标识: 传过来什么,回传什么 -->
+            <!-- buttonStyle 三种, 0=默认,1=取消,2=红色 -->
+            <!-- placeholder 输入框提示语 -->
+            requestObj = '{"title":"确定要提交吗?","message":"内容","buttonCount":[{"title":"取消","buttonStyle":"1"},{"title":"确定","buttonStyle":"0"}],"functionType":"标识","placeholder":"输入框提示语"}'
+            
+            prompt(requestObj);
+        }
+        
+            // 弹窗回传参数默认方法名,根据json
+            function setResponseObj(value){
+                agentShow.innerHTML=value;
+            };
+        
+            // 接收方法1 - 调用setApi_token('值')
+            setApi_token = function jieShouFangFa(value) {
+                alert("接收到的值1:"+value);
+            }
+        
+            // 接收方法2 - 调用jieShouFangFa('值')
+            function jieShouFangFa(value) {
+                alert("接收到的值2:"+value);
+            }
+
+            // JS -> iOS 传值
+            function chuanZhiFangFa() {
+                requestObj = '{"functionType":"getPrice","price":"价格","order_num":"订单号"}'
+                agentShow.innerHTML=requestObj;
+                
+                // SendValueiOSJSON 监听名字
+                window.webkit.messageHandlers.SendValueiOSJSON.postMessage(requestObj);
+                
+            }
+        
+            // 让iOS 通过反射进行跳转
+            function fanSheTiaoZhuan(){
+                // 方法是数组放置
+<!--                requestObj = '{"className":"CViewController","method":[{"methodName":"setParamReturn","methodType":"returnValue","methodParameter":"方法参数"},{"methodName":"setParam","methodType":"parameter","methodParameter":"参数"},{"methodName":"refresh","methodType":"void","methodParameter":""}],"properties":{"msgId":"1223030330","msgType":"3"}}'-->
+
+            requestObj = '{"className":"CViewController","method":{"methodName":"refresh","methodType":"void","methodParameter":""},"properties":{"msgId":"1223030330","msgType":"3"}}'
+            
+                agentShow.innerHTML=requestObj
+                window.webkit.messageHandlers.JumpToNewVC.postMessage(requestObj);
+            }
+        
+            // 调用iOS某个类 获取json
+            function getJSON_iOS(){
+                requestObj = '{"className":"LLParams","method":{"methodName":"getParams","setMethodName":"setResponseObj"}}'
+                
+                window.webkit.messageHandlers.getJSON_iOS.postMessage(requestObj);
+            }
+        
+         // 获取Agent
+        function getAgent() {
+            agentShow.innerHTML=navigator.userAgent
+        };
+        
+        //上传图片
+        function upLoadFile(event) {
+            let file = event.target.files
+            console.log(file)
+            let paramsFile = new window.FormData() // 创建form对象
+            paramsFile.append('id', this.currentId)
+            for (let i = 0; i < file.length; i++) {
+                paramsFile.append('file', file[i]) // 通过append向form对象添加数据
+            }
+            console.log(paramsFile.get('file'))
+        }
+        
+            // 调用iOS相机
+            function diaoYongXiangJi(){
+                window.webkit.messageHandlers.getPhoto.postMessage("相机");
+            }
+        
+        </script>
+    </body>
+</html>
